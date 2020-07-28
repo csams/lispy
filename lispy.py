@@ -1,52 +1,17 @@
 #!/usr/bin/env python3
 """
-Trying to get my head around simply typed lambda calculus and lisp style
-interpreters.
+Getting my head around simply typed lambda calculus and lisp interpreters.
 
-This one evaluates in applicative order.
+This one evaluates arguments before passing them to functions, known as
+"applicative order."
 
-Environments are implemented as python closures that are called with variable
-names. They return values from the closest lexical scope.
+Environments are python closures that are called with variable names. They
+return values from the lexical scope in which lambdas are defined.
 
-Variable names are just python strings, so there can be collisions when using
-string data. Just stick with numbers.
+Variable names are python strings, so there can be collisions with string data.
+Stick with numbers.
 
 Python because these things aren't slow enough already.
-
-Examples::
-
-    Yes, these are tuples.
-
-    # The factorial function. Defined in this funny way since simply
-    # typed lambda calculus doesn't support recursion.
-    fac_ = (lam, ("f"),
-            (lam, ("n"),
-                (if_, (eq, "n", 0),
-                    1,
-                    (mul,
-                        "n",
-                        ("f", (sub, "n", 1))))))
-
-
-    # The fibonacci function.
-    fib_ = (lam, ("f"),
-            (lam, ("n"),
-                (if_, (lt, "n", 2),
-                    1,
-                    (add,
-                        ("f", (sub, "n", 1)),
-                        ("f", (sub, "n", 2))))))
-
-    # Recursion support
-
-    # Z will pass fac_ into itself as the first argument.
-    fac = (Z, fac_)
-
-    # Z will pass fib_ into itself as the first argument.
-    fib = (Z, fib_)
-
-    print([(i, evaluate((fac, i))) for i in range(0, 10)])
-    print([(i, evaluate((fib, i))) for i in range(0, 10)])
 """
 import operator
 
@@ -65,7 +30,7 @@ eq = "=="
 
 def evaluate(expression, environment=None):
     def ev(expr, env):
-        # environment lookup
+        # assume it's a variable and try to look it up.
         try:
             return env(expr)
         except:
@@ -79,16 +44,16 @@ def evaluate(expression, environment=None):
                 test, consequent, alternative = rest
                 return ev(consequent, env) if ev(test, env) else ev(alternative, env)
 
-            # build procedures from lambdas
+            # build a procedure from a lambda, capturing the current environment.
             if op == lam:
-                v, body = rest
+                vs, body = rest
 
                 def procedure(*args):
                     # When invoked, evaluate the lambda's body in an
-                    # environment created by extending the environment in which
-                    # the lambda was defined with arguments bound to the
-                    # parameter names. Multiple parameters should be in a tuple.
-                    e = dict(zip(v if isinstance(v, tuple) else (v,), args))
+                    # environment created by extending the environment of
+                    # definition with the parameters bound to the caller's
+                    # arguments. Multiple parameters should be in a tuple.
+                    e = dict(zip(vs if isinstance(vs, tuple) else (vs,), args))
                     return ev(body, lambda y: e[y] if y in e else env(y))
                 return procedure
 
