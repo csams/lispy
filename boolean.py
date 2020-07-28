@@ -1,4 +1,4 @@
-from stlc import if_, lam
+from lispy import if_, lam
 
 not_ = (lam, "a",
         (if_, "a",

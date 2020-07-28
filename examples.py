@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from stlc import evaluate, if_, lam, Z, add, mul, sub, lt, eq
+from lispy import evaluate, if_, lam, Z, add, mul, sub, lt, eq
 
 # The factorial function.
 fac_ = (lam, ("f"),
