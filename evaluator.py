@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
+import faulthandler
 import operator
 from functools import partial
+faulthandler.enable()
 
 
-lam = object()
-procedure = object()
+lam = "lam"
 
 
 def evaluate(expression, environment=None):
@@ -21,7 +22,7 @@ def evaluate(expression, environment=None):
                 test, consequent, alternative = rest
                 return ev(consequent, env) if ev(test, env) else ev(alternative, env)
 
-            if op is lam:
+            if op == lam:
                 v, body = rest
 
                 def procedure(*args):
@@ -31,7 +32,6 @@ def evaluate(expression, environment=None):
 
             proc = ev(op, env)
             args = [ev(r, env) for r in rest]
-
             try:
                 return proc(*args)
             except:
@@ -52,12 +52,17 @@ def evaluate(expression, environment=None):
     return ev(expression, lambda y: env[y])
 
 
-Y = ((lam, "f",
-        (lam, "x",
-            ("f", ("x", "x")))),
-        (lam, "y",
-            ("f", ("y", "y"))))
+# The "Y" combinator that implements recursion in lazy languages.
+Y = (lam, "h",
+        ((lam, "x", ("h", ("x", "x"))),
+            (lam, "y", ("h", ("y", "y")))))
 
+# The "Z" combinator that implements recursion in strict languages.
+Z = (lam, "f",
+        ((lam, "x", ("f", ((lam, "v", (("x", "x"), "v"))))),
+            (lam, "x", ("f", ((lam, "v", (("x", "x"), "v")))))))
+
+# The base factorial function
 fac = (lam, "f",
         (lam, "n",
             ("if", ("==", "n", 0),
@@ -66,7 +71,6 @@ fac = (lam, "f",
                     "n",
                     ("f", ("-", "n", 1))))))
 
-prog = (lam, "n", ((Y, fac), "n"))
-import math
-# print(evaluate(((fac, math.factorial), 5)))
-print(evaluate((prog, 5)))
+# factorial defined with the Z combinator.
+fact = (Z, fac)
+print(evaluate((fact, 5)))
