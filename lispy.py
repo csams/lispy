@@ -49,7 +49,6 @@ Examples::
     print([(i, evaluate((fib, i))) for i in range(0, 10)])
 """
 import operator
-from functools import partial
 
 
 if_ = "if"
@@ -96,10 +95,7 @@ def evaluate(expression, environment=None):
             # procedure application
             proc = ev(op, env)
             args = [ev(r, env) for r in rest]
-            try:
-                return proc(*args)
-            except:
-                return partial(proc, *args)
+            return proc(*args)
 
         # don't know what to do with it - just say it's "self-evaluating"
         return expr
