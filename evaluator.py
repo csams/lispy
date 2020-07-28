@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
-import faulthandler
 import operator
 from functools import partial
-faulthandler.enable()
 
 
 lam = "lam"
@@ -52,15 +50,23 @@ def evaluate(expression, environment=None):
     return ev(expression, lambda y: env[y])
 
 
-# The "Y" combinator that implements recursion in lazy languages.
+# The "Y" combinator for recursion in lazy languages.
+# This won't work in python.
 Y = (lam, "h",
-        ((lam, "x", ("h", ("x", "x"))),
-            (lam, "y", ("h", ("y", "y")))))
+        ((lam, "x",
+            ("h", ("x", "x"))),
+            (lam, "x",
+                ("h", ("x", "x")))))
 
-# The "Z" combinator that implements recursion in strict languages.
+# The "Z" combinator for recursion in strict languages.
+# This works in python.
 Z = (lam, "f",
-        ((lam, "x", ("f", ((lam, "v", (("x", "x"), "v"))))),
-            (lam, "x", ("f", ((lam, "v", (("x", "x"), "v")))))))
+        ((lam, "x",
+            ("f", ((lam, "v",
+                (("x", "x"), "v"))))),
+            (lam, "x",
+                ("f", ((lam,
+                    "v", (("x", "x"), "v")))))))
 
 # The base factorial function
 fac = (lam, "f",
