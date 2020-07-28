@@ -3,7 +3,16 @@ import operator
 from functools import partial
 
 
+if_ = "if"
 lam = "lam"
+
+mul = "*"
+add = "+"
+sub = "-"
+div = "/"
+
+lt = "<"
+eq = "=="
 
 
 def evaluate(expression, environment=None):
@@ -16,7 +25,7 @@ def evaluate(expression, environment=None):
         if isinstance(expr, (tuple, list)):
             op, rest = expr[0], expr[1:]
 
-            if op == "if":
+            if op == if_:
                 test, consequent, alternative = rest
                 return ev(consequent, env) if ev(test, env) else ev(alternative, env)
 
@@ -38,28 +47,19 @@ def evaluate(expression, environment=None):
         return expr
 
     env = {
-        "+": operator.add,
-        "-": operator.sub,
-        "/": operator.floordiv,
-        "*": operator.mul,
-        "<": operator.lt,
-        "==": operator.eq,
+        add: operator.add,
+        sub: operator.sub,
+        div: operator.floordiv,
+        mul: operator.mul,
+        lt: operator.lt,
+        eq: operator.eq,
     }
 
     env.update(environment or {})
     return ev(expression, lambda y: env[y])
 
 
-# The "Y" combinator for recursion in lazy languages.
-# This won't work in python.
-Y = (lam, "h",
-        ((lam, "x",
-            ("h", ("x", "x"))),
-            (lam, "x",
-                ("h", ("x", "x")))))
-
 # The "Z" combinator for recursion in strict languages.
-# This works in python.
 Z = (lam, "f",
         ((lam, "x",
             ("f", ((lam, "v",
@@ -68,15 +68,10 @@ Z = (lam, "f",
                 ("f", ((lam,
                     "v", (("x", "x"), "v")))))))
 
-# The base factorial function
-fac = (lam, "f",
-        (lam, "n",
-            ("if", ("==", "n", 0),
-                1,
-                ("*",
-                    "n",
-                    ("f", ("-", "n", 1))))))
-
-# factorial defined with the Z combinator.
-fact = (Z, fac)
-print(evaluate((fact, 5)))
+# The "Y" combinator for recursion in lazy languages.
+# This won't work in python.
+Y = (lam, "h",
+        ((lam, "x",
+            ("h", ("x", "x"))),
+            (lam, "x",
+                ("h", ("x", "x")))))
