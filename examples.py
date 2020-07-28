@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 from lispy import evaluate, if_, lam, Z, add, mul, sub, lt, eq
 
-# The factorial function.
+# Yes, these are tuples.
+
+# The factorial function. Defined in this funny way since simply
+# typed lambda calculus doesn't support recursion.
 fac_ = (lam, ("f"),
         (lam, ("n"),
             (if_, (eq, "n", 0),
@@ -20,10 +23,12 @@ fib_ = (lam, ("f"),
                     ("f", (sub, "n", 1)),
                     ("f", (sub, "n", 2))))))
 
-# Z will pass fac_ into itself as the first param.
+# Recursion support
+
+# Z will pass fac_ into itself as the first argument.
 fac = (Z, fac_)
 
-# Z will pass fib_ into itself as the first param.
+# Z will pass fib_ into itself as the first argument.
 fib = (Z, fib_)
 
 print([(i, evaluate((fac, i))) for i in range(0, 10)])

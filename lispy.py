@@ -1,17 +1,24 @@
 #!/usr/bin/env python3
 """
 Trying to get my head around simply typed lambda calculus and lisp style
-interpreters. This one evaluates in applicative order.
+interpreters.
 
-Strings are treated as variables, so there can be problems if you use them as
-data that conflict with variable names in an enclosing scope. Best just stick to
-numbers.
+This one evaluates in applicative order.
+
+Environments are implemented as python closures that are called with variable
+names and return values from the closest lexical scope.
+
+Variable names are just python strings, so there can be collisions when using
+string data. Just stick with numbers.
 
 Python because these things aren't slow enough already.
 
 Examples::
 
-    # The factorial function.
+    Yes, these are tuples.
+
+    # The factorial function. Defined in this funny way since simply
+    # typed lambda calculus doesn't support recursion.
     fac_ = (lam, ("f"),
             (lam, ("n"),
                 (if_, (eq, "n", 0),
@@ -30,10 +37,12 @@ Examples::
                         ("f", (sub, "n", 1)),
                         ("f", (sub, "n", 2))))))
 
-    # Z will pass fac_ into itself as the first param.
+    # Recursion support
+
+    # Z will pass fac_ into itself as the first argument.
     fac = (Z, fac_)
 
-    # Z will pass fib_ into itself as the first param.
+    # Z will pass fib_ into itself as the first argument.
     fib = (Z, fib_)
 
     print([(i, evaluate((fac, i))) for i in range(0, 10)])
@@ -71,7 +80,7 @@ def evaluate(expression, environment=None):
                 test, consequent, alternative = rest
                 return ev(consequent, env) if ev(test, env) else ev(alternative, env)
 
-            # lambdas
+            # build procedures from lambdas
             if op == lam:
                 v, body = rest
 
@@ -80,7 +89,7 @@ def evaluate(expression, environment=None):
                     return ev(body, lambda y: e[y] if y in e else env(y))
                 return procedure
 
-            # application
+            # procedure application
             proc = ev(op, env)
             args = [ev(r, env) for r in rest]
             try:
@@ -88,7 +97,7 @@ def evaluate(expression, environment=None):
             except:
                 return partial(proc, *args)
 
-        # self-evaluating
+        # don't know what to do with it - just say it's "self-evaluating"
         return expr
 
     # the machine is born knowing a few things.
@@ -105,7 +114,9 @@ def evaluate(expression, environment=None):
     return ev(expression, lambda y: env[y])
 
 
-# The "Z" combinator for recursion in strict languages.
+# See https://en.wikipedia.org/wiki/Fixed-point_combinator
+
+# For recursion in strict languages.
 Z = (lam, "f",
         ((lam, "x",
             ("f", ((lam, "v",
@@ -114,8 +125,9 @@ Z = (lam, "f",
                 ("f", ((lam,
                     "v", (("x", "x"), "v")))))))
 
-# The "Y" combinator for recursion in lazy languages.
-# Won't work with the current impl. Makes neat python core dumps, though.
+# For recursion in lazy languages.
+# Won't work with the current impl. Makes neat python core dumps when you blow
+# the stack, though.
 Y = (lam, "h",
         ((lam, "x",
             ("h", ("x", "x"))),
