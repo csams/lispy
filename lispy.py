@@ -6,7 +6,7 @@ interpreters.
 This one evaluates in applicative order.
 
 Environments are implemented as python closures that are called with variable
-names and return values from the closest lexical scope.
+names. They return values from the closest lexical scope.
 
 Variable names are just python strings, so there can be collisions when using
 string data. Just stick with numbers.
@@ -72,7 +72,7 @@ def evaluate(expression, environment=None):
         except:
             pass
 
-        if isinstance(expr, (tuple, list)):
+        if isinstance(expr, tuple):
             op, rest = expr[0], expr[1:]
 
             # conditionals
@@ -85,7 +85,11 @@ def evaluate(expression, environment=None):
                 v, body = rest
 
                 def procedure(*args):
-                    e = dict(zip(v if isinstance(v, (tuple, list)) else [v], args))
+                    # When invoked, evaluate the lambda's body in an
+                    # environment created by extending the environment in which
+                    # the lambda was defined with arguments bound to the
+                    # parameter names. Multiple parameters should be in a tuple.
+                    e = dict(zip(v if isinstance(v, tuple) else (v,), args))
                     return ev(body, lambda y: e[y] if y in e else env(y))
                 return procedure
 
