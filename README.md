@@ -1,8 +1,9 @@
-This is a bare bones "lisp" written in python. I was inspired by William Byrd's
-["The Most Beautiful Program Ever Written" on youtube](https://www.youtube.com/watch?v=OyfBQmvr2Hc).
+This is a bare bones "lisp" embedded in python. I was inspired by William Byrd's
+["The Most Beautiful Program Ever Written"](https://www.youtube.com/watch?v=OyfBQmvr2Hc).
 
 See also the [Y and Z combinators](https://en.wikipedia.org/wiki/Fixed-point_combinator#Fixed-point_combinators_in_lambda_calculus).
 
+Example programs:
 ```python
 #!/usr/bin/env python3
 from lispy import evaluate, if_, lam, Z, add, mul, sub, lt, eq
