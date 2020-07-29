@@ -41,8 +41,8 @@ def evaluate(expression, environment=None):
 
             # conditionals
             if op == if_:
-                test, consequent, alternative = rest
-                return ev(consequent, env) if ev(test, env) else ev(alternative, env)
+                condition, consequent, alternative = rest
+                return ev(consequent, env) if ev(condition, env) else ev(alternative, env)
 
             # build a procedure from a lambda, capturing the current environment.
             if op == lam:
