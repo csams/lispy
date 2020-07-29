@@ -18,12 +18,10 @@ fac_ = (lam, ("f"),
 fib_ = (lam, ("f"),
         (lam, ("n"),
             (if_, (lt, "n", 2),
-                1,
+                "n",
                 (add,
                     ("f", (sub, "n", 1)),
                     ("f", (sub, "n", 2))))))
-
-# Recursion support
 
 # Z will pass fac_ into itself as the first argument.
 fac = (Z, fac_)
@@ -31,5 +29,5 @@ fac = (Z, fac_)
 # Z will pass fib_ into itself as the first argument.
 fib = (Z, fib_)
 
-print([(i, evaluate((fac, i))) for i in range(0, 10)])
-print([(i, evaluate((fib, i))) for i in range(0, 10)])
+print([(i, evaluate((fac, i))) for i in range(0, 11)])
+print([(i, evaluate((fib, i))) for i in range(0, 11)])

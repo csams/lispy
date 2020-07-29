@@ -87,8 +87,8 @@ Z = (lam, "f",
             ("f", ((lam, "v",
                 (("x", "x"), "v"))))),
             (lam, "x",
-                ("f", ((lam,
-                    "v", (("x", "x"), "v")))))))
+                ("f", ((lam, "v",
+                    (("x", "x"), "v")))))))
 
 # For recursion in lazy languages.
 # Won't work with the current impl. Makes neat python core dumps when you blow
