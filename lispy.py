@@ -2,7 +2,7 @@
 """
 Getting my head around simply typed lambda calculus and lisp interpreters.
 
-This one evaluates arguments before passing them to functions, known as
+This one evaluates arguments before passing them to procedures, known as
 "applicative order."
 
 Environments are python closures that are called with variable names. They
